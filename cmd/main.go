@@ -2,35 +2,32 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 
-	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	"github.com/sede-x/gopoc-connector/pkg/db"
-	"github.com/sede-x/gopoc-connector/pkg/handlers"
+	"github.com/sede-x/gopoc-connector/pkg/controllers"
+	"github.com/sede-x/gopoc-connector/pkg/data/postgres"
+	"github.com/sede-x/gopoc-connector/pkg/logic"
 )
 
 func main() {
-	// TODO: check if it is OK to use godotenv package to handle environment variables
+	// load environment variables
 	if err := godotenv.Load(); err != nil {
 		log.Fatalln(err.Error())
 	}
-	dbURL := os.Getenv("DBURL")
 
-	gormdb, err := db.Init(dbURL)
+	// load DB
+	dbURL := os.Getenv("DBURL")
+	pgdb, err := postgres.New(dbURL)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	h := handlers.New(gormdb)
-	router := mux.NewRouter()
 
-	router.HandleFunc("/connectors", h.GetAllConnectors).Methods(http.MethodGet)
-	router.HandleFunc("/connectors", h.AddConnector).Methods(http.MethodPost)
-	router.HandleFunc("/connectors/{id}", h.GetConnectorByID).Methods(http.MethodGet)
-	router.HandleFunc("/connectors/{id}", h.UpdateConnectorByID).Methods(http.MethodPut)
-	router.HandleFunc("/connectors/{id}", h.DeleteConnectorByID).Methods(http.MethodDelete)
+	// setup logic and controller
+	conlogic := &logic.Connector{DB: pgdb}
+	concontroller := &controllers.ConnectorRestAPI{ConnectorLogic: conlogic}
 
-	log.Println("Connector API is running")
-	http.ListenAndServe(":4000", router)
+	// start server
+	serverURL := os.Getenv("SERVERURL")
+	concontroller.StartServer(serverURL)
 }
