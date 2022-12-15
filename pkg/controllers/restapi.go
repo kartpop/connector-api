@@ -15,26 +15,29 @@ import (
 
 type ConnectorRestAPI struct {
 	logic.ConnectorLogic
+	router *mux.Router
 }
 
 func (cra *ConnectorRestAPI) StartServer(serveraddr string) {
-	router := mux.NewRouter()
-	router.HandleFunc("/connectors", cra.GetAllConnectors).Methods(http.MethodGet)
-	router.HandleFunc("/connectors", cra.AddConnector).Methods(http.MethodPost)
-	router.HandleFunc("/connectors/{id}", cra.GetConnectorByID).Methods(http.MethodGet)
-	router.HandleFunc("/connectors/{id}", cra.UpdateConnectorByID).Methods(http.MethodPut)
-	router.HandleFunc("/connectors/{id}", cra.DeleteConnectorByID).Methods(http.MethodDelete)
+	cra.Initialize()
 
 	// start server
 	log.Println("Connector API is running")
-	http.ListenAndServe(serveraddr, router)
+	http.ListenAndServe(serveraddr, cra.router)
+}
+
+func (cra *ConnectorRestAPI) Initialize() {
+	cra.router = mux.NewRouter()
+	cra.router.HandleFunc("/connectors", cra.GetAllConnectors).Methods(http.MethodGet)
+	cra.router.HandleFunc("/connectors", cra.AddConnector).Methods(http.MethodPost)
+	cra.router.HandleFunc("/connectors/{id}", cra.GetConnectorByID).Methods(http.MethodGet)
+	cra.router.HandleFunc("/connectors/{id}", cra.UpdateConnectorByID).Methods(http.MethodPut)
+	cra.router.HandleFunc("/connectors/{id}", cra.DeleteConnectorByID).Methods(http.MethodDelete)
 }
 
 // GetAllConnectors returns all connectors.
 func (cra *ConnectorRestAPI) GetAllConnectors(w http.ResponseWriter, r *http.Request) {
 	connectors, err := cra.ConnectorLogic.GetAllConnectors()
-
-	// TODO: handle http status codes
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
