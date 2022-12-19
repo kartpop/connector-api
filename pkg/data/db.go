@@ -6,6 +6,6 @@ type DB interface {
 	GetAllConnectors() (*[]models.Connector, error)
 	AddConnector(*models.Connector) error
 	GetConnectorByID(int) (*models.Connector, error)
-	UpdateConnectorByID(int, models.Connector) (*models.Connector, error)
-	DeleteConnectorByID(id int) error
+	UpdateConnector(int, models.Connector) (*models.Connector, error)
+	DeleteConnector(id int) error
 }

@@ -31,8 +31,8 @@ func (cra *ConnectorRestAPI) Initialize() {
 	cra.router.HandleFunc("/connectors", cra.GetAllConnectors).Methods(http.MethodGet)
 	cra.router.HandleFunc("/connectors", cra.AddConnector).Methods(http.MethodPost)
 	cra.router.HandleFunc("/connectors/{id}", cra.GetConnectorByID).Methods(http.MethodGet)
-	cra.router.HandleFunc("/connectors/{id}", cra.UpdateConnectorByID).Methods(http.MethodPut)
-	cra.router.HandleFunc("/connectors/{id}", cra.DeleteConnectorByID).Methods(http.MethodDelete)
+	cra.router.HandleFunc("/connectors/{id}", cra.UpdateConnector).Methods(http.MethodPut)
+	cra.router.HandleFunc("/connectors/{id}", cra.DeleteConnector).Methods(http.MethodDelete)
 }
 
 // GetAllConnectors returns all connectors.
@@ -110,8 +110,8 @@ func (cra *ConnectorRestAPI) GetConnectorByID(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// UpdateConnectorByID updates the connector for given Id and json body in the request.
-func (cra *ConnectorRestAPI) UpdateConnectorByID(w http.ResponseWriter, r *http.Request) {
+// UpdateConnector updates the connector for given Id and json body in the request.
+func (cra *ConnectorRestAPI) UpdateConnector(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -133,7 +133,7 @@ func (cra *ConnectorRestAPI) UpdateConnectorByID(w http.ResponseWriter, r *http.
 		return
 	}
 
-	connector, err := cra.ConnectorLogic.UpdateConnectorByID(id, updatedConnector)
+	connector, err := cra.ConnectorLogic.UpdateConnector(id, updatedConnector)
 	if err != nil {
 		// TODO: must be a better way of doing this!
 		if err.Error() == "record not found" {
@@ -152,8 +152,8 @@ func (cra *ConnectorRestAPI) UpdateConnectorByID(w http.ResponseWriter, r *http.
 	}
 }
 
-// DeleteConnectorByID deletes the connector for given Id.
-func (cra *ConnectorRestAPI) DeleteConnectorByID(w http.ResponseWriter, r *http.Request) {
+// DeleteConnector deletes the connector for given Id.
+func (cra *ConnectorRestAPI) DeleteConnector(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -161,7 +161,7 @@ func (cra *ConnectorRestAPI) DeleteConnectorByID(w http.ResponseWriter, r *http.
 		return
 	}
 
-	err = cra.ConnectorLogic.DeleteConnectorByID(id)
+	err = cra.ConnectorLogic.DeleteConnector(id)
 	if err != nil {
 		// TODO: must be a better way of doing this!
 		if err.Error() == "record not found" {

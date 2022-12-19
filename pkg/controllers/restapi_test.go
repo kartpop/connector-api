@@ -34,7 +34,7 @@ func (mcl *mockConnectorLogic) GetConnectorByID(id int) (*models.Connector, erro
 	return nil, fmt.Errorf("record not found")
 }
 
-func (mcl *mockConnectorLogic) UpdateConnectorByID(id int, upcon models.Connector) (*models.Connector, error) {
+func (mcl *mockConnectorLogic) UpdateConnector(id int, upcon models.Connector) (*models.Connector, error) {
 	if id < 1 || id > 3 {
 		return nil, fmt.Errorf("record not found") // mocks.Connectors have ID's 1,2,3
 	}
@@ -47,7 +47,7 @@ func (mcl *mockConnectorLogic) UpdateConnectorByID(id int, upcon models.Connecto
 	return &connector, nil
 }
 
-func (mcl *mockConnectorLogic) DeleteConnectorByID(id int) error {
+func (mcl *mockConnectorLogic) DeleteConnector(id int) error {
 	if id < 1 || id > 3 {
 		return fmt.Errorf("record not found") // mocks.Connectors have ID's 1,2,3
 	}
@@ -161,7 +161,7 @@ func TestGetConnectorByIDValidRequest(t *testing.T) {
 	}
 }
 
-func TestUpdateConnectorByIDBadRequest(t *testing.T) {
+func TestUpdateConnectorBadRequest(t *testing.T) {
 	// setup
 	req, _ := http.NewRequest(http.MethodPut, "/connectors/3", strings.NewReader("Not a valid models.Connector json - illformed request!"))
 	res := httptest.NewRecorder()
@@ -173,7 +173,7 @@ func TestUpdateConnectorByIDBadRequest(t *testing.T) {
 	checkResponseCode(t, http.StatusBadRequest, res.Code)
 }
 
-func TestUpdateConnectorByIDInvalidID(t *testing.T) {
+func TestUpdateConnectorInvalidID(t *testing.T) {
 	// setup
 	upcon := models.Connector{
 		StationId:   15,
@@ -196,7 +196,7 @@ func TestUpdateConnectorByIDInvalidID(t *testing.T) {
 	checkResponseCode(t, http.StatusNotFound, res.Code)
 }
 
-func TestUpdateConnectorByIDValidRequest(t *testing.T) {
+func TestUpdateConnectorValidRequest(t *testing.T) {
 	// setup
 	upcon := models.Connector{
 		StationId:   15,
@@ -228,7 +228,7 @@ func TestUpdateConnectorByIDValidRequest(t *testing.T) {
 	}
 }
 
-func TestDeleteConnectorByIDInvalidID(t *testing.T) {
+func TestDeleteConnectorInvalidID(t *testing.T) {
 	// setup
 	req, _ := http.NewRequest(http.MethodDelete, "/connectors/6", nil)
 	res := httptest.NewRecorder()
@@ -240,7 +240,7 @@ func TestDeleteConnectorByIDInvalidID(t *testing.T) {
 	checkResponseCode(t, http.StatusNotFound, res.Code)
 }
 
-func TestDeleteConnectorByIDValidRequest(t *testing.T) {
+func TestDeleteConnectorValidRequest(t *testing.T) {
 	// setup
 	req, _ := http.NewRequest(http.MethodDelete, "/connectors/3", nil)
 	res := httptest.NewRecorder()

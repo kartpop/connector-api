@@ -9,8 +9,8 @@ type ConnectorLogic interface {
 	GetAllConnectors() (*[]models.Connector, error)
 	AddConnector(*models.Connector) error
 	GetConnectorByID(int) (*models.Connector, error)
-	UpdateConnectorByID(id int, upcon models.Connector) (*models.Connector, error)
-	DeleteConnectorByID(id int) error
+	UpdateConnector(id int, upcon models.Connector) (*models.Connector, error)
+	DeleteConnector(id int) error
 }
 
 type Connector struct {
@@ -43,8 +43,8 @@ func (c *Connector) GetConnectorByID(id int) (*models.Connector, error) {
 	return connector, nil
 }
 
-func (c *Connector) UpdateConnectorByID(id int, upcon models.Connector) (*models.Connector, error) {
-	connector, err := c.DB.UpdateConnectorByID(id, upcon)
+func (c *Connector) UpdateConnector(id int, upcon models.Connector) (*models.Connector, error) {
+	connector, err := c.DB.UpdateConnector(id, upcon)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +52,8 @@ func (c *Connector) UpdateConnectorByID(id int, upcon models.Connector) (*models
 	return connector, nil
 }
 
-func (c *Connector) DeleteConnectorByID(id int) error {
-	if err := c.DB.DeleteConnectorByID(id); err != nil {
+func (c *Connector) DeleteConnector(id int) error {
+	if err := c.DB.DeleteConnector(id); err != nil {
 		return err
 	}
 

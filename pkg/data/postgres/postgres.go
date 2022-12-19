@@ -50,7 +50,7 @@ func (pg *PostgresDB) GetConnectorByID(id int) (*models.Connector, error) {
 	return &connector, nil
 }
 
-func (pg *PostgresDB) UpdateConnectorByID(id int, upcon models.Connector) (*models.Connector, error) {
+func (pg *PostgresDB) UpdateConnector(id int, upcon models.Connector) (*models.Connector, error) {
 	var con models.Connector
 	if result := pg.DB.First(&con, id); result.Error != nil {
 		return nil, result.Error
@@ -69,7 +69,7 @@ func (pg *PostgresDB) UpdateConnectorByID(id int, upcon models.Connector) (*mode
 	return &con, nil
 }
 
-func (pg *PostgresDB) DeleteConnectorByID(id int) error {
+func (pg *PostgresDB) DeleteConnector(id int) error {
 	var connector models.Connector
 	if result := pg.DB.First(&connector, id); result.Error != nil {
 		return result.Error
