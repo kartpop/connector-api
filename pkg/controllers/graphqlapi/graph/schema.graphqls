@@ -1,0 +1,15 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Connector {
+  id: ID!
+  StationID: Int!
+  Type: String!
+  ChargeSpeed: String!
+  Active: Boolean!
+}
+
+type Query {
+  connectors: [Connector!]!
+}

@@ -6,6 +6,8 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/sede-x/gopoc-connector/pkg/controllers"
+	"github.com/sede-x/gopoc-connector/pkg/controllers/graphqlapi"
+	"github.com/sede-x/gopoc-connector/pkg/controllers/restapi"
 	"github.com/sede-x/gopoc-connector/pkg/data/postgres"
 	"github.com/sede-x/gopoc-connector/pkg/logic"
 )
@@ -23,11 +25,19 @@ func main() {
 		log.Fatalln(err.Error())
 	}
 
-	// setup logic and controller
+	// setup logic
 	conlogic := &logic.Connector{DB: pgdb}
-	concontroller := &controllers.ConnectorRestAPI{ConnectorLogic: conlogic}
+
+	// setup server based on set environment
+	var server controllers.APIServer
+	switch apiType := os.Getenv("APITYPE"); apiType {
+	case "restapi":
+		server = &restapi.Server{ConnectorLogic: conlogic}
+	case "graphqlapi":
+		server = &graphqlapi.Server{ConnectorLogic: conlogic}
+	}
 
 	// start server
 	serverURL := os.Getenv("SERVERURL")
-	concontroller.StartServer(serverURL)
+	server.Start(serverURL)
 }

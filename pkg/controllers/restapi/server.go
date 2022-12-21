@@ -1,4 +1,4 @@
-package controllers
+package restapi
 
 import (
 	"encoding/json"
@@ -13,31 +13,31 @@ import (
 	"github.com/sede-x/gopoc-connector/pkg/models"
 )
 
-type ConnectorRestAPI struct {
+type Server struct {
 	logic.ConnectorLogic
 	router *mux.Router
 }
 
-func (cra *ConnectorRestAPI) StartServer(serveraddr string) {
-	cra.Initialize()
+func (s *Server) Start(serveraddr string) {
+	s.Initialize()
 
 	// start server
-	log.Println("Connector API is running")
-	http.ListenAndServe(serveraddr, cra.router)
+	log.Println("Connector REST API is running")
+	http.ListenAndServe(serveraddr, s.router)
 }
 
-func (cra *ConnectorRestAPI) Initialize() {
-	cra.router = mux.NewRouter()
-	cra.router.HandleFunc("/connectors", cra.GetAllConnectors).Methods(http.MethodGet)
-	cra.router.HandleFunc("/connectors", cra.AddConnector).Methods(http.MethodPost)
-	cra.router.HandleFunc("/connectors/{id}", cra.GetConnectorByID).Methods(http.MethodGet)
-	cra.router.HandleFunc("/connectors/{id}", cra.UpdateConnector).Methods(http.MethodPut)
-	cra.router.HandleFunc("/connectors/{id}", cra.DeleteConnector).Methods(http.MethodDelete)
+func (s *Server) Initialize() {
+	s.router = mux.NewRouter()
+	s.router.HandleFunc("/connectors", s.GetAllConnectors).Methods(http.MethodGet)
+	s.router.HandleFunc("/connectors", s.AddConnector).Methods(http.MethodPost)
+	s.router.HandleFunc("/connectors/{id}", s.GetConnectorByID).Methods(http.MethodGet)
+	s.router.HandleFunc("/connectors/{id}", s.UpdateConnector).Methods(http.MethodPut)
+	s.router.HandleFunc("/connectors/{id}", s.DeleteConnector).Methods(http.MethodDelete)
 }
 
 // GetAllConnectors returns all connectors.
-func (cra *ConnectorRestAPI) GetAllConnectors(w http.ResponseWriter, r *http.Request) {
-	connectors, err := cra.ConnectorLogic.GetAllConnectors()
+func (s *Server) GetAllConnectors(w http.ResponseWriter, r *http.Request) {
+	connectors, err := s.ConnectorLogic.GetAllConnectors()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -53,7 +53,7 @@ func (cra *ConnectorRestAPI) GetAllConnectors(w http.ResponseWriter, r *http.Req
 }
 
 // AddConnector creates and appends a connector to the collection and sends back a json response of the created connector.
-func (cra *ConnectorRestAPI) AddConnector(w http.ResponseWriter, r *http.Request) {
+func (s *Server) AddConnector(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -68,7 +68,7 @@ func (cra *ConnectorRestAPI) AddConnector(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = cra.ConnectorLogic.AddConnector(&connector)
+	err = s.ConnectorLogic.AddConnector(&connector)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -83,7 +83,7 @@ func (cra *ConnectorRestAPI) AddConnector(w http.ResponseWriter, r *http.Request
 }
 
 // GetConnectorByID returns the connector for the given ID.
-func (cra *ConnectorRestAPI) GetConnectorByID(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetConnectorByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -91,7 +91,7 @@ func (cra *ConnectorRestAPI) GetConnectorByID(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	connector, err := cra.ConnectorLogic.GetConnectorByID(id)
+	connector, err := s.ConnectorLogic.GetConnectorByID(id)
 	if err != nil {
 		// TODO: must be a better way of doing this!
 		if err.Error() == "record not found" {
@@ -111,7 +111,7 @@ func (cra *ConnectorRestAPI) GetConnectorByID(w http.ResponseWriter, r *http.Req
 }
 
 // UpdateConnector updates the connector for given Id and json body in the request.
-func (cra *ConnectorRestAPI) UpdateConnector(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UpdateConnector(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -133,7 +133,7 @@ func (cra *ConnectorRestAPI) UpdateConnector(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	connector, err := cra.ConnectorLogic.UpdateConnector(id, updatedConnector)
+	connector, err := s.ConnectorLogic.UpdateConnector(id, updatedConnector)
 	if err != nil {
 		// TODO: must be a better way of doing this!
 		if err.Error() == "record not found" {
@@ -153,7 +153,7 @@ func (cra *ConnectorRestAPI) UpdateConnector(w http.ResponseWriter, r *http.Requ
 }
 
 // DeleteConnector deletes the connector for given Id.
-func (cra *ConnectorRestAPI) DeleteConnector(w http.ResponseWriter, r *http.Request) {
+func (s *Server) DeleteConnector(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -161,7 +161,7 @@ func (cra *ConnectorRestAPI) DeleteConnector(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	err = cra.ConnectorLogic.DeleteConnector(id)
+	err = s.ConnectorLogic.DeleteConnector(id)
 	if err != nil {
 		// TODO: must be a better way of doing this!
 		if err.Error() == "record not found" {

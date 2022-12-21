@@ -1,4 +1,4 @@
-package controllers
+package restapi
 
 import (
 	"bytes"
@@ -54,11 +54,11 @@ func (mcl *mockConnectorLogic) DeleteConnector(id int) error {
 	return nil
 }
 
-var cra ConnectorRestAPI
+var s Server
 
 func init() {
-	cra = ConnectorRestAPI{ConnectorLogic: &mockConnectorLogic{}}
-	cra.Initialize()
+	s = Server{ConnectorLogic: &mockConnectorLogic{}}
+	s.Initialize()
 }
 
 func TestGetAllConnectors(t *testing.T) {
@@ -67,7 +67,7 @@ func TestGetAllConnectors(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// invoke func GetAllConnectors
-	cra.router.ServeHTTP(res, req)
+	s.router.ServeHTTP(res, req)
 
 	// test
 	checkResponseCode(t, http.StatusOK, res.Code)
@@ -89,7 +89,7 @@ func TestAddConnectorBadRequest(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// invoke func AddConnector
-	cra.router.ServeHTTP(res, req)
+	s.router.ServeHTTP(res, req)
 
 	// test
 	checkResponseCode(t, http.StatusBadRequest, res.Code)
@@ -112,7 +112,7 @@ func TestAddConnectorValidRequest(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// invoke func AddConnector
-	cra.router.ServeHTTP(res, req)
+	s.router.ServeHTTP(res, req)
 
 	// test
 	checkResponseCode(t, http.StatusCreated, res.Code)
@@ -133,7 +133,7 @@ func TestGetConnectorByIDInvalidID(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// invoke func GetConnectorByID
-	cra.router.ServeHTTP(res, req)
+	s.router.ServeHTTP(res, req)
 
 	// test
 	checkResponseCode(t, http.StatusNotFound, res.Code)
@@ -145,7 +145,7 @@ func TestGetConnectorByIDValidRequest(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// invoke func GetConnectorByID
-	cra.router.ServeHTTP(res, req)
+	s.router.ServeHTTP(res, req)
 
 	// test
 	checkResponseCode(t, http.StatusOK, res.Code)
@@ -167,7 +167,7 @@ func TestUpdateConnectorBadRequest(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// invoke func UpdateConnectorByID
-	cra.router.ServeHTTP(res, req)
+	s.router.ServeHTTP(res, req)
 
 	// test
 	checkResponseCode(t, http.StatusBadRequest, res.Code)
@@ -190,7 +190,7 @@ func TestUpdateConnectorInvalidID(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// invoke func UpdateConnectorByID
-	cra.router.ServeHTTP(res, req)
+	s.router.ServeHTTP(res, req)
 
 	// test
 	checkResponseCode(t, http.StatusNotFound, res.Code)
@@ -213,7 +213,7 @@ func TestUpdateConnectorValidRequest(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// invoke func UpdateConnectorByID
-	cra.router.ServeHTTP(res, req)
+	s.router.ServeHTTP(res, req)
 
 	// test
 	checkResponseCode(t, http.StatusOK, res.Code)
@@ -234,7 +234,7 @@ func TestDeleteConnectorInvalidID(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// invoke func DeleteConnectorByID
-	cra.router.ServeHTTP(res, req)
+	s.router.ServeHTTP(res, req)
 
 	// test
 	checkResponseCode(t, http.StatusNotFound, res.Code)
@@ -246,7 +246,7 @@ func TestDeleteConnectorValidRequest(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// invoke func DeleteConnectorByID
-	cra.router.ServeHTTP(res, req)
+	s.router.ServeHTTP(res, req)
 
 	// test
 	checkResponseCode(t, http.StatusOK, res.Code)
