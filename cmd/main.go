@@ -28,7 +28,7 @@ func main() {
 	// setup logic
 	conlogic := &logic.Connector{DB: pgdb}
 
-	// setup server based on set environment
+	// setup server based on APITYPE set in .env
 	var server controllers.APIServer
 	switch apiType := os.Getenv("APITYPE"); apiType {
 	case "restapi":
