@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/sede-x/gopoc-connector/pkg/controllers"
 	"github.com/sede-x/gopoc-connector/pkg/controllers/graphqlapi"
 	"github.com/sede-x/gopoc-connector/pkg/controllers/restapi"
@@ -13,13 +13,13 @@ import (
 )
 
 func main() {
-	// load environment variables
-	if err := godotenv.Load(); err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	// load DB
-	dbURL := os.Getenv("DBURL")
+	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_CONTAINER_NAME"),
+		os.Getenv("DB_CONTAINER_PORT"),
+		os.Getenv("DB_NAME"),
+	)
 	pgdb, err := postgres.New(dbURL)
 	if err != nil {
 		log.Fatalln(err.Error())
@@ -38,6 +38,6 @@ func main() {
 	}
 
 	// start server
-	serverURL := os.Getenv("SERVERURL")
+	serverURL := fmt.Sprintf(":%s", os.Getenv("SERVER_HOST_PORT"))
 	server.Start(serverURL)
 }

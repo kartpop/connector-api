@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  conapp:
+    depends_on:
+      pgdb:
+        condition: service_healthy
+    build:
+      context: .
+    container_name: ${SERVER_CONTAINER_NAME}
+    hostname: ${SERVER_CONTAINER_NAME}
+    networks:
+      - conapp-condb-network
+    ports:
+      - "${SERVER_HOST_PORT}:${SERVER_CONTAINER_PORT}"
+    environment:
+      - DB_USER=${DB_USER}  
+      - DB_PASSWORD=${DB_PASSWORD} 
+      - DB_CONTAINER_NAME=${DB_CONTAINER_NAME}  
+      - DB_CONTAINER_PORT=${DB_CONTAINER_PORT} 
+      - DB_NAME=${DB_NAME}  
+      - APITYPE=${APITYPE}
+      - SERVER_HOST_PORT=${SERVER_HOST_PORT}
+  pgdb:
+    container_name: ${DB_CONTAINER_NAME}
+    hostname: ${DB_CONTAINER_NAME}
+    image: postgres:latest
+    restart: always
+    ports:
+      - "${DB_HOST_PORT}:${DB_CONTAINER_PORT}"
+    volumes:
+     - condb-pg:/var/lib/postgresql/data
+    networks:
+      - conapp-condb-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  condb-pg:
+
+networks:
+  conapp-condb-network:
+    driver: bridge
