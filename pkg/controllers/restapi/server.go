@@ -23,6 +23,7 @@ func (s *Server) Start(serveraddr string) {
 
 	// start server
 	log.Println("Connector REST API is running")
+	log.Printf("connect to http://localhost%s/ to send requests", serveraddr)
 	http.ListenAndServe(serveraddr, s.router)
 }
 

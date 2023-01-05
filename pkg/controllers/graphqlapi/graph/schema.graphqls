@@ -13,3 +13,14 @@ type Connector {
 type Query {
   connectors: [Connector!]!
 }
+
+input NewConnector {
+  StationID: Int!
+  Type: String!
+  ChargeSpeed: String!
+  Active: Boolean!
+}
+
+type Mutation {
+  createConnector(input: NewConnector!): Connector!
+}

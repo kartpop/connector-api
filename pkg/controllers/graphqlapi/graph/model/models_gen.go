@@ -9,3 +9,10 @@ type Connector struct {
 	ChargeSpeed string `json:"ChargeSpeed"`
 	Active      bool   `json:"Active"`
 }
+
+type NewConnector struct {
+	StationID   int    `json:"StationID"`
+	Type        string `json:"Type"`
+	ChargeSpeed string `json:"ChargeSpeed"`
+	Active      bool   `json:"Active"`
+}

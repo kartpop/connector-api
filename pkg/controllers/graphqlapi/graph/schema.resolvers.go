@@ -10,8 +10,25 @@ import (
 	"strconv"
 
 	"github.com/sede-x/gopoc-connector/pkg/controllers/graphqlapi/graph/model"
-	"github.com/sede-x/gopoc-connector/pkg/models"
 )
+
+// CreateConnector is the resolver for the createConnector field.
+func (r *mutationResolver) CreateConnector(ctx context.Context, input model.NewConnector) (*model.Connector, error) {
+	var connector model.Connector
+	connector.StationID = input.StationID
+	connector.ChargeSpeed = input.ChargeSpeed
+	connector.Type = input.Type
+	connector.Active = input.Active
+
+	lconnector := convertToDBConnector(connector)
+	err := r.ConnectorLogic.AddConnector(&lconnector)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	connector.ID = strconv.Itoa(lconnector.Id)
+	return &connector, nil
+}
 
 // Connectors is the resolver for the connectors field.
 func (r *queryResolver) Connectors(ctx context.Context) ([]*model.Connector, error) {
@@ -30,26 +47,11 @@ func (r *queryResolver) Connectors(ctx context.Context) ([]*model.Connector, err
 	return connectors, nil
 }
 
-func convertToGraphConnector(con models.Connector) model.Connector {
-	var connector model.Connector
-	connector.ID = strconv.Itoa(con.Id)
-	connector.StationID = con.StationId
-	connector.ChargeSpeed = con.ChargeSpeed
-	connector.Type = con.Type
-	connector.Active = con.Active
-
-	return connector
-}
+// Mutation returns MutationResolver implementation.
+func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
-type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
 type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }
