@@ -34,6 +34,7 @@ func (pg *PostgresDB) GetAllConnectors() (*[]models.Connector, error) {
 }
 
 func (pg *PostgresDB) AddConnector(con *models.Connector) error {
+	con.Id = con.GenerateId()
 	if result := pg.DB.Create(con); result.Error != nil {
 		return result.Error
 	}
@@ -41,24 +42,24 @@ func (pg *PostgresDB) AddConnector(con *models.Connector) error {
 	return nil
 }
 
-func (pg *PostgresDB) GetConnectorByID(id int) (*models.Connector, error) {
-	var connector models.Connector
-	if result := pg.DB.First(&connector, id); result.Error != nil {
+func (pg *PostgresDB) GetConnectorByID(id string) (*models.Connector, error) {
+	var con models.Connector
+	if result := pg.DB.First(&con, "id = ?", id); result.Error != nil {
 		return nil, result.Error
 	}
 
-	return &connector, nil
+	return &con, nil
 }
 
-func (pg *PostgresDB) UpdateConnector(id int, upcon models.Connector) (*models.Connector, error) {
+func (pg *PostgresDB) UpdateConnector(id string, upcon models.Connector) (*models.Connector, error) {
 	var con models.Connector
-	if result := pg.DB.First(&con, id); result.Error != nil {
+	if result := pg.DB.First(&con, "id = ?", id); result.Error != nil {
 		return nil, result.Error
 	}
 
 	// TODO: check if updatedConnector has all fields set.
 	// If it excludes some fields, default values would get set for the original connector in DB causing data loss.
-	con.StationId = upcon.StationId
+	con.LocationId = upcon.LocationId
 	con.Type = upcon.Type
 	con.ChargeSpeed = upcon.ChargeSpeed
 	con.Active = upcon.Active
@@ -69,12 +70,12 @@ func (pg *PostgresDB) UpdateConnector(id int, upcon models.Connector) (*models.C
 	return &con, nil
 }
 
-func (pg *PostgresDB) DeleteConnector(id int) error {
-	var connector models.Connector
-	if result := pg.DB.First(&connector, id); result.Error != nil {
+func (pg *PostgresDB) DeleteConnector(id string) error {
+	var con models.Connector
+	if result := pg.DB.First(&con, "id = ?", id); result.Error != nil {
 		return result.Error
 	}
-	if result := pg.DB.Delete(&connector); result.Error != nil {
+	if result := pg.DB.Delete(&con); result.Error != nil {
 		return result.Error
 	}
 

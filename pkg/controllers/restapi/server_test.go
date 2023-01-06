@@ -11,9 +11,16 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/sede-x/gopoc-connector/pkg/helper"
 	"github.com/sede-x/gopoc-connector/pkg/mocks"
 	"github.com/sede-x/gopoc-connector/pkg/models"
 )
+
+var connectorSet = map[string]models.Connector{
+	mocks.Connectors[0].Id: mocks.Connectors[0],
+	mocks.Connectors[1].Id: mocks.Connectors[1],
+	mocks.Connectors[2].Id: mocks.Connectors[2],
+}
 
 // Mock struct implementing ConnectorLogic interface - to be injected into ConnectorRestApi instance
 type mockConnectorLogic struct{}
@@ -23,33 +30,34 @@ func (mcl *mockConnectorLogic) GetAllConnectors() (*[]models.Connector, error) {
 }
 
 func (mcl *mockConnectorLogic) AddConnector(c *models.Connector) error {
-	c.Id = 6
+	c.Id = mocks.Connectors[0].Id
 	return nil
 }
 
-func (mcl *mockConnectorLogic) GetConnectorByID(id int) (*models.Connector, error) {
-	if id >= 1 && id <= 3 {
-		return &mocks.Connectors[id-1], nil // mocks.Connectors have ID's 1,2,3
+func (mcl *mockConnectorLogic) GetConnectorByID(id string) (*models.Connector, error) {
+	if connector, ok := connectorSet[id]; ok {
+		return &connector, nil
 	}
 	return nil, fmt.Errorf("record not found")
 }
 
-func (mcl *mockConnectorLogic) UpdateConnector(id int, upcon models.Connector) (*models.Connector, error) {
-	if id < 1 || id > 3 {
-		return nil, fmt.Errorf("record not found") // mocks.Connectors have ID's 1,2,3
+func (mcl *mockConnectorLogic) UpdateConnector(id string, upcon models.Connector) (*models.Connector, error) {
+	connector, ok := connectorSet[id]
+	if !ok {
+		return nil, fmt.Errorf("record not found")
 	}
-	connector := models.Connector{}
-	connector.Id = id
-	connector.StationId = upcon.StationId
+
+	connector.LocationId = upcon.LocationId
 	connector.Type = upcon.Type
 	connector.ChargeSpeed = upcon.ChargeSpeed
 	connector.Active = upcon.Active
 	return &connector, nil
 }
 
-func (mcl *mockConnectorLogic) DeleteConnector(id int) error {
-	if id < 1 || id > 3 {
-		return fmt.Errorf("record not found") // mocks.Connectors have ID's 1,2,3
+func (mcl *mockConnectorLogic) DeleteConnector(id string) error {
+	_, ok := connectorSet[id]
+	if !ok {
+		return fmt.Errorf("record not found")
 	}
 	return nil
 }
@@ -97,8 +105,9 @@ func TestAddConnectorBadRequest(t *testing.T) {
 
 func TestAddConnectorValidRequest(t *testing.T) {
 	// setup
+	locationIdMock := helper.GetMD5Hash("some-stationId")
 	newcon := models.Connector{
-		StationId:   1,
+		LocationId:  locationIdMock,
 		Type:        "L1, AC",
 		ChargeSpeed: "3 kW",
 		Active:      true,
@@ -122,8 +131,11 @@ func TestAddConnectorValidRequest(t *testing.T) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if actual.Id != 6 {
-		t.Errorf("Expected ID of created connector %d, got %d\n", 6, actual.Id)
+	if actual.Id == "" {
+		t.Errorf("Expected ID of created connector %s, got empty string", actual.Id)
+	}
+	if actual.LocationId != locationIdMock {
+		t.Errorf("Expected location ID of created connector: got -> %s, want -> %s", actual.LocationId, locationIdMock)
 	}
 }
 
@@ -141,7 +153,8 @@ func TestGetConnectorByIDInvalidID(t *testing.T) {
 
 func TestGetConnectorByIDValidRequest(t *testing.T) {
 	// setup
-	req, _ := http.NewRequest(http.MethodGet, "/connectors/3", nil)
+	validId := mocks.Connectors[0].Id
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/connectors/%s", validId), nil)
 	res := httptest.NewRecorder()
 
 	// invoke func GetConnectorByID
@@ -155,7 +168,7 @@ func TestGetConnectorByIDValidRequest(t *testing.T) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	expected := mocks.Connectors[2] // Connector ID 3 is at index 2 in mocks
+	expected := mocks.Connectors[0]
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Actual response from GET /connectors does not match expected expected response.")
 	}
@@ -175,8 +188,9 @@ func TestUpdateConnectorBadRequest(t *testing.T) {
 
 func TestUpdateConnectorInvalidID(t *testing.T) {
 	// setup
+	locationIdMock := helper.GetMD5Hash("some-stationId")
 	upcon := models.Connector{
-		StationId:   15,
+		LocationId:  locationIdMock,
 		Type:        "L2, AC",
 		ChargeSpeed: "9 kW",
 		Active:      true,
@@ -186,7 +200,8 @@ func TestUpdateConnectorInvalidID(t *testing.T) {
 		log.Fatalln(err)
 	}
 
-	req, _ := http.NewRequest(http.MethodPut, "/connectors/6", bytes.NewReader(b))
+	invalidId := helper.GetMD5Hash("random-id")
+	req, _ := http.NewRequest(http.MethodPut, fmt.Sprintf("/connectors/%s", invalidId), bytes.NewReader(b))
 	res := httptest.NewRecorder()
 
 	// invoke func UpdateConnectorByID
@@ -198,8 +213,9 @@ func TestUpdateConnectorInvalidID(t *testing.T) {
 
 func TestUpdateConnectorValidRequest(t *testing.T) {
 	// setup
+	locationIdMock := helper.GetMD5Hash("some-stationId")
 	upcon := models.Connector{
-		StationId:   15,
+		LocationId:  locationIdMock,
 		Type:        "L2, AC",
 		ChargeSpeed: "9 kW",
 		Active:      true,
@@ -209,7 +225,8 @@ func TestUpdateConnectorValidRequest(t *testing.T) {
 		log.Fatalln(err)
 	}
 
-	req, _ := http.NewRequest(http.MethodPut, "/connectors/3", bytes.NewReader(b))
+	validId := mocks.Connectors[1].Id
+	req, _ := http.NewRequest(http.MethodPut, fmt.Sprintf("/connectors/%s", validId), bytes.NewReader(b))
 	res := httptest.NewRecorder()
 
 	// invoke func UpdateConnectorByID
@@ -223,8 +240,8 @@ func TestUpdateConnectorValidRequest(t *testing.T) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if actual.Id != 3 {
-		t.Errorf("Expected ID of updated connector %d, got %d\n", 3, actual.Id)
+	if actual.Id != validId {
+		t.Errorf("Expected ID of updated connector %s, got %s\n", validId, actual.Id)
 	}
 }
 
@@ -242,7 +259,8 @@ func TestDeleteConnectorInvalidID(t *testing.T) {
 
 func TestDeleteConnectorValidRequest(t *testing.T) {
 	// setup
-	req, _ := http.NewRequest(http.MethodDelete, "/connectors/3", nil)
+	validId := mocks.Connectors[0].Id
+	req, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/connectors/%s", validId), nil)
 	res := httptest.NewRecorder()
 
 	// invoke func DeleteConnectorByID
@@ -256,7 +274,7 @@ func TestDeleteConnectorValidRequest(t *testing.T) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if actual != fmt.Sprintf("Connector with Id: %v was deleted successfully.", 3) {
+	if actual != fmt.Sprintf("Connector with Id: %v was deleted successfully.", validId) {
 		t.Errorf("Expected delete message did not match actual.")
 	}
 }

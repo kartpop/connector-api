@@ -3,8 +3,8 @@
 # https://gqlgen.com/getting-started/
 
 type Connector {
-  id: ID!
-  StationID: Int!
+  id: String!
+  LocationId: String!
   Type: String!
   ChargeSpeed: String!
   Active: Boolean!
@@ -15,7 +15,7 @@ type Query {
 }
 
 input NewConnector {
-  StationID: Int!
+  LocationId: String!
   Type: String!
   ChargeSpeed: String!
   Active: Boolean!

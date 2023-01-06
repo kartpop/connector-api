@@ -49,7 +49,7 @@ type ComplexityRoot struct {
 		Active      func(childComplexity int) int
 		ChargeSpeed func(childComplexity int) int
 		ID          func(childComplexity int) int
-		StationID   func(childComplexity int) int
+		LocationID  func(childComplexity int) int
 		Type        func(childComplexity int) int
 	}
 
@@ -105,12 +105,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Connector.ID(childComplexity), true
 
-	case "Connector.StationID":
-		if e.complexity.Connector.StationID == nil {
+	case "Connector.LocationId":
+		if e.complexity.Connector.LocationID == nil {
 			break
 		}
 
-		return e.complexity.Connector.StationID(childComplexity), true
+		return e.complexity.Connector.LocationID(childComplexity), true
 
 	case "Connector.Type":
 		if e.complexity.Connector.Type == nil {
@@ -322,7 +322,7 @@ func (ec *executionContext) _Connector_id(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Connector_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -332,14 +332,14 @@ func (ec *executionContext) fieldContext_Connector_id(ctx context.Context, field
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Connector_StationID(ctx context.Context, field graphql.CollectedField, obj *model.Connector) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Connector_StationID(ctx, field)
+func (ec *executionContext) _Connector_LocationId(ctx context.Context, field graphql.CollectedField, obj *model.Connector) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Connector_LocationId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -352,7 +352,7 @@ func (ec *executionContext) _Connector_StationID(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.StationID, nil
+		return obj.LocationID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -364,19 +364,19 @@ func (ec *executionContext) _Connector_StationID(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Connector_StationID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Connector_LocationId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Connector",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -555,8 +555,8 @@ func (ec *executionContext) fieldContext_Mutation_createConnector(ctx context.Co
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Connector_id(ctx, field)
-			case "StationID":
-				return ec.fieldContext_Connector_StationID(ctx, field)
+			case "LocationId":
+				return ec.fieldContext_Connector_LocationId(ctx, field)
 			case "Type":
 				return ec.fieldContext_Connector_Type(ctx, field)
 			case "ChargeSpeed":
@@ -622,8 +622,8 @@ func (ec *executionContext) fieldContext_Query_connectors(ctx context.Context, f
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Connector_id(ctx, field)
-			case "StationID":
-				return ec.fieldContext_Connector_StationID(ctx, field)
+			case "LocationId":
+				return ec.fieldContext_Connector_LocationId(ctx, field)
 			case "Type":
 				return ec.fieldContext_Connector_Type(ctx, field)
 			case "ChargeSpeed":
@@ -2546,18 +2546,18 @@ func (ec *executionContext) unmarshalInputNewConnector(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"StationID", "Type", "ChargeSpeed", "Active"}
+	fieldsInOrder := [...]string{"LocationId", "Type", "ChargeSpeed", "Active"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "StationID":
+		case "LocationId":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("StationID"))
-			it.StationID, err = ec.unmarshalNInt2int(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("LocationId"))
+			it.LocationID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2616,9 +2616,9 @@ func (ec *executionContext) _Connector(ctx context.Context, sel ast.SelectionSet
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "StationID":
+		case "LocationId":
 
-			out.Values[i] = ec._Connector_StationID(ctx, field, obj)
+			out.Values[i] = ec._Connector_LocationId(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -3148,36 +3148,6 @@ func (ec *executionContext) marshalNConnector2ᚖgithubᚗcomᚋsedeᚑxᚋgopoc
 		return graphql.Null
 	}
 	return ec._Connector(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalID(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalID(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
-	res, err := graphql.UnmarshalInt(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
-	res := graphql.MarshalInt(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
 }
 
 func (ec *executionContext) unmarshalNNewConnector2githubᚗcomᚋsedeᚑxᚋgopocᚑconnectorᚋpkgᚋcontrollersᚋgraphqlapiᚋgraphᚋmodelᚐNewConnector(ctx context.Context, v interface{}) (model.NewConnector, error) {

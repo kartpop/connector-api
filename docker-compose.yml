@@ -26,10 +26,14 @@ services:
     hostname: ${DB_CONTAINER_NAME}
     image: postgres:latest
     restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     ports:
       - "${DB_HOST_PORT}:${DB_CONTAINER_PORT}"
     volumes:
-     - condb-pg:/var/lib/postgresql/data
+     - condb-pg-vol:/var/lib/postgresql/data
     networks:
       - conapp-condb-network
     healthcheck:
@@ -39,7 +43,7 @@ services:
       retries: 5
 
 volumes:
-  condb-pg:
+  condb-pg-vol:
 
 networks:
   conapp-condb-network:

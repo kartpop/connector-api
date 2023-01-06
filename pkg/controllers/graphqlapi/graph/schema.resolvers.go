@@ -7,7 +7,6 @@ package graph
 import (
 	"context"
 	"log"
-	"strconv"
 
 	"github.com/sede-x/gopoc-connector/pkg/controllers/graphqlapi/graph/model"
 )
@@ -15,7 +14,7 @@ import (
 // CreateConnector is the resolver for the createConnector field.
 func (r *mutationResolver) CreateConnector(ctx context.Context, input model.NewConnector) (*model.Connector, error) {
 	var connector model.Connector
-	connector.StationID = input.StationID
+	connector.LocationID = input.LocationID
 	connector.ChargeSpeed = input.ChargeSpeed
 	connector.Type = input.Type
 	connector.Active = input.Active
@@ -26,7 +25,7 @@ func (r *mutationResolver) CreateConnector(ctx context.Context, input model.NewC
 		log.Fatalln(err.Error())
 	}
 
-	connector.ID = strconv.Itoa(lconnector.Id)
+	connector.ID = lconnector.Id
 	return &connector, nil
 }
 

@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/sede-x/gopoc-connector/pkg/logic"
@@ -86,15 +85,13 @@ func (s *Server) AddConnector(w http.ResponseWriter, r *http.Request) {
 // GetConnectorByID returns the connector for the given ID.
 func (s *Server) GetConnectorByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	id := vars["id"]
 
 	connector, err := s.ConnectorLogic.GetConnectorByID(id)
 	if err != nil {
 		// TODO: must be a better way of doing this!
+		// can do `errors.Is(err, gorm.ErrRecordNotFound)` - but this introduces
+		// dependency of controller layer on DB ORM library
 		if err.Error() == "record not found" {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
@@ -114,11 +111,7 @@ func (s *Server) GetConnectorByID(w http.ResponseWriter, r *http.Request) {
 // UpdateConnector updates the connector for given Id and json body in the request.
 func (s *Server) UpdateConnector(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	id := vars["id"]
 
 	defer r.Body.Close()
 	body, err := io.ReadAll(r.Body)
@@ -136,11 +129,13 @@ func (s *Server) UpdateConnector(w http.ResponseWriter, r *http.Request) {
 
 	connector, err := s.ConnectorLogic.UpdateConnector(id, updatedConnector)
 	if err != nil {
-		// TODO: must be a better way of doing this!
+		// TODO: check how `errors.Is(err, gorm.ErrRecordNotFound)` can be incorporated
+		// without indroducing dependency on ORM library
 		if err.Error() == "record not found" {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
+
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -156,15 +151,12 @@ func (s *Server) UpdateConnector(w http.ResponseWriter, r *http.Request) {
 // DeleteConnector deletes the connector for given Id.
 func (s *Server) DeleteConnector(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	id := vars["id"]
 
-	err = s.ConnectorLogic.DeleteConnector(id)
+	err := s.ConnectorLogic.DeleteConnector(id)
 	if err != nil {
-		// TODO: must be a better way of doing this!
+		// TODO: check how `errors.Is(err, gorm.ErrRecordNotFound)` can be incorporated
+		// without indroducing dependency on ORM library
 		if err.Error() == "record not found" {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return

@@ -4,14 +4,14 @@ package model
 
 type Connector struct {
 	ID          string `json:"id"`
-	StationID   int    `json:"StationID"`
+	LocationID  string `json:"LocationId"`
 	Type        string `json:"Type"`
 	ChargeSpeed string `json:"ChargeSpeed"`
 	Active      bool   `json:"Active"`
 }
 
 type NewConnector struct {
-	StationID   int    `json:"StationID"`
+	LocationID  string `json:"LocationId"`
 	Type        string `json:"Type"`
 	ChargeSpeed string `json:"ChargeSpeed"`
 	Active      bool   `json:"Active"`
