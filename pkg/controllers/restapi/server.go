@@ -21,8 +21,7 @@ func (s *Server) Start(serveraddr string) {
 	s.Initialize()
 
 	// start server
-	log.Println("Connector REST API is running")
-	log.Printf("connect to http://localhost%s/ to send requests", serveraddr)
+	log.Printf("Connector REST API is running at http://localhost%s/", serveraddr)
 	http.ListenAndServe(serveraddr, s.router)
 }
 
@@ -38,12 +37,19 @@ func (s *Server) Initialize() {
 // GetConnectors returns a list of connectors based on the query paramerters. If there are no
 // query parameters, all connectors will be returned.
 func (s *Server) GetConnectors(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-	locationIds := q["location_id"]
-	types := q["type"]
-	var connectors *[]models.Connector
+	query := r.URL.Query()
+	var sort bool
+	if _, present := query["sort"]; present {
+		sort = true // TODO: currently only one type of sort enabled -> based on location_id first, then type
+	}
+	queryParams := models.ConnectorQueryParams{
+		LocationIds: query["location_id"],
+		Types: query["type"],
+		Sort: sort,
+	}
+	var connectors []*models.Connector
 	var err error
-	connectors, err = s.ConnectorLogic.GetConnectors(locationIds, types)
+	connectors, err = s.ConnectorLogic.GetConnectors(queryParams)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

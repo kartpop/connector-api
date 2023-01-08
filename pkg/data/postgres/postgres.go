@@ -82,22 +82,31 @@ func (pg *PostgresDB) DeleteConnector(id string) error {
 	return nil
 }
 
-func (pg *PostgresDB) GetConnectors(locationIds []string, types []string) (*[]models.Connector, error) {
-	var connectors []models.Connector
-	var result *gorm.DB
-	if len(locationIds) > 0 && len(types) > 0 {
-		result = pg.DB.Where("location_id IN ? AND type IN ?", locationIds, types).Find(&connectors)
-	} else if len(locationIds) > 0 {
-		result = pg.DB.Where("location_id IN ?", locationIds).Find(&connectors)
-	} else if len(types) > 0 {
-		result = pg.DB.Where("type IN ?", types).Find(&connectors)
-	} else {
-		result = pg.DB.Find(&connectors)
+func (pg *PostgresDB) GetConnectors(qp models.ConnectorQueryParams) ([]*models.Connector, error) {
+	var connectors []*models.Connector
+	result := pg.DB
+
+	// CAUTION: Take care while chaining methods, refer - https://gorm.io/docs/method_chaining.html
+	// use sorting if required
+	if qp.Sort {
+		result = result.Order("location_id").Order("type")
+	}
+
+	// fetch data 
+	if len(qp.LocationIds) > 0 && len(qp.Types) > 0 {
+		result = result.Where("location_id IN ? AND type IN ?", qp.LocationIds, qp.Types).Find(&connectors)
+	} else if len(qp.LocationIds) > 0 {
+		result = result.Where("location_id IN ?", qp.LocationIds).Find(&connectors)
+	} else if len(qp.Types) > 0 {
+		result = result.Where("type IN ?", qp.Types).Find(&connectors)
+	} else { // get all connectors
+		result = result.Find(&connectors)
 	}
 	
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return &connectors, nil
+	return connectors, nil
 }
+

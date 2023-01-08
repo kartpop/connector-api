@@ -8,5 +8,5 @@ type DB interface {
 	GetConnectorByID(string) (*models.Connector, error)
 	UpdateConnector(string, models.Connector) (*models.Connector, error)
 	DeleteConnector(id string) error
-	GetConnectors(locationIds []string, types []string) (*[]models.Connector, error)
+	GetConnectors(qp models.ConnectorQueryParams) ([]*models.Connector, error)
 }

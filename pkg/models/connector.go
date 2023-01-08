@@ -22,3 +22,8 @@ func (c Connector) GenerateId() string {
 	return helper.GetMD5Hash(keyString)
 }
 
+type ConnectorQueryParams struct {
+	LocationIds []string
+	Types []string
+	Sort bool // if true { sort by 1.location_id, 2.type } else { don't sort }
+}

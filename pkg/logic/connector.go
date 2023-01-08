@@ -11,7 +11,7 @@ type ConnectorLogic interface {
 	GetConnectorByID(string) (*models.Connector, error)
 	UpdateConnector(id string, upcon models.Connector) (*models.Connector, error)
 	DeleteConnector(id string) error
-	GetConnectors(locationIds []string, types []string) (*[]models.Connector, error)
+	GetConnectors(qp models.ConnectorQueryParams) ([]*models.Connector, error)
 }
 
 type Connector struct {
@@ -61,8 +61,8 @@ func (c *Connector) DeleteConnector(id string) error {
 	return nil
 }
 
-func (c *Connector) GetConnectors(locationIds []string, types []string) (*[]models.Connector, error) {
-	connectors, err := c.DB.GetConnectors(locationIds, types)
+func (c *Connector) GetConnectors(qp models.ConnectorQueryParams) ([]*models.Connector, error) {
+	connectors, err := c.DB.GetConnectors(qp)
 	if err != nil {
 		return nil, err
 	}

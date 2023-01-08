@@ -62,9 +62,9 @@ func (mcl *mockConnectorLogic) DeleteConnector(id string) error {
 	return nil
 }
 
-func (mcl *mockConnectorLogic) GetConnectors(lIds []string, types []string) (*[]models.Connector, error) {
+func (mcl *mockConnectorLogic) GetConnectors(qp models.ConnectorQueryParams) ([]*models.Connector, error) {
 	// TODO: not implemented
-	return &[]models.Connector{}, nil
+	return []*models.Connector{}, nil
 }
 
 var s Server
