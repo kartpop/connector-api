@@ -81,3 +81,23 @@ func (pg *PostgresDB) DeleteConnector(id string) error {
 
 	return nil
 }
+
+func (pg *PostgresDB) GetConnectors(locationIds []string, types []string) (*[]models.Connector, error) {
+	var connectors []models.Connector
+	var result *gorm.DB
+	if len(locationIds) > 0 && len(types) > 0 {
+		result = pg.DB.Where("location_id IN ? AND type IN ?", locationIds, types).Find(&connectors)
+	} else if len(locationIds) > 0 {
+		result = pg.DB.Where("location_id IN ?", locationIds).Find(&connectors)
+	} else if len(types) > 0 {
+		result = pg.DB.Where("type IN ?", types).Find(&connectors)
+	} else {
+		result = pg.DB.Find(&connectors)
+	}
+	
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &connectors, nil
+}

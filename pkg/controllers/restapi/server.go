@@ -28,11 +28,34 @@ func (s *Server) Start(serveraddr string) {
 
 func (s *Server) Initialize() {
 	s.router = mux.NewRouter()
-	s.router.HandleFunc("/connectors", s.GetAllConnectors).Methods(http.MethodGet)
+	s.router.HandleFunc("/connectors", s.GetConnectors).Methods(http.MethodGet)
 	s.router.HandleFunc("/connectors", s.AddConnector).Methods(http.MethodPost)
 	s.router.HandleFunc("/connectors/{id}", s.GetConnectorByID).Methods(http.MethodGet)
 	s.router.HandleFunc("/connectors/{id}", s.UpdateConnector).Methods(http.MethodPut)
 	s.router.HandleFunc("/connectors/{id}", s.DeleteConnector).Methods(http.MethodDelete)
+}
+
+// GetConnectors returns a list of connectors based on the query paramerters. If there are no
+// query parameters, all connectors will be returned.
+func (s *Server) GetConnectors(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	locationIds := q["location_id"]
+	types := q["type"]
+	var connectors *[]models.Connector
+	var err error
+	connectors, err = s.ConnectorLogic.GetConnectors(locationIds, types)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(connectors)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 // GetAllConnectors returns all connectors.
@@ -93,7 +116,7 @@ func (s *Server) GetConnectorByID(w http.ResponseWriter, r *http.Request) {
 		// can do `errors.Is(err, gorm.ErrRecordNotFound)` - but this introduces
 		// dependency of controller layer on DB ORM library
 		if err.Error() == "record not found" {
-			http.Error(w, err.Error(), http.StatusNotFound)
+			http.NotFound(w, r)
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)

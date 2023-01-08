@@ -11,6 +11,7 @@ type ConnectorLogic interface {
 	GetConnectorByID(string) (*models.Connector, error)
 	UpdateConnector(id string, upcon models.Connector) (*models.Connector, error)
 	DeleteConnector(id string) error
+	GetConnectors(locationIds []string, types []string) (*[]models.Connector, error)
 }
 
 type Connector struct {
@@ -58,4 +59,13 @@ func (c *Connector) DeleteConnector(id string) error {
 	}
 
 	return nil
+}
+
+func (c *Connector) GetConnectors(locationIds []string, types []string) (*[]models.Connector, error) {
+	connectors, err := c.DB.GetConnectors(locationIds, types)
+	if err != nil {
+		return nil, err
+	}
+
+	return connectors, nil
 }

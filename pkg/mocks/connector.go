@@ -23,7 +23,7 @@ var Connectors = []models.Connector{
 	{
 		Id:          helper.GetMD5Hash("2343sdfd"),
 		LocationId:  helper.GetMD5Hash("656sdfd"),
-		Type:        "DCFC", // Direct Current Fast Chargers (DCFC)
+		Type:        "L3", 
 		ChargeSpeed: "50 KW",
 		Active:      false,
 	},
