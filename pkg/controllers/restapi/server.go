@@ -38,18 +38,13 @@ func (s *Server) Initialize() {
 // query parameters, all connectors will be returned.
 func (s *Server) GetConnectors(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	var sort bool
-	if _, present := query["sort"]; present {
-		sort = true // TODO: currently only one type of sort enabled -> based on location_id first, then type
+	queryParams, err := GetQueryParams(query)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
-	queryParams := models.ConnectorQueryParams{
-		LocationIds: query["location_id"],
-		Types: query["type"],
-		Sort: sort,
-	}
-	var connectors []*models.Connector
-	var err error
-	connectors, err = s.ConnectorLogic.GetConnectors(queryParams)
+	var pagedConnectors *models.ConnectorPagination
+	pagedConnectors, err = s.ConnectorLogic.GetConnectors(queryParams)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -57,24 +52,7 @@ func (s *Server) GetConnectors(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(connectors)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-// GetAllConnectors returns all connectors.
-func (s *Server) GetAllConnectors(w http.ResponseWriter, r *http.Request) {
-	connectors, err := s.ConnectorLogic.GetAllConnectors()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(connectors)
+	err = json.NewEncoder(w).Encode(pagedConnectors)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

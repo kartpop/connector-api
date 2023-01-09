@@ -10,7 +10,7 @@ import (
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func GetMD5Hash(text string) string {
-	// create a random string to prepend
+	// to ensure unique hash in case text is duplicate, prepend random string to text
 	rand.Seed(time.Now().UnixNano())
 	b := make([]rune, 16)
 	for i := range b {

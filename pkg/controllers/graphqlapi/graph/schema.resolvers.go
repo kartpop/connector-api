@@ -9,6 +9,7 @@ import (
 	"log"
 
 	"github.com/sede-x/gopoc-connector/pkg/controllers/graphqlapi/graph/model"
+	"github.com/sede-x/gopoc-connector/pkg/models"
 )
 
 // CreateConnector is the resolver for the createConnector field.
@@ -31,15 +32,15 @@ func (r *mutationResolver) CreateConnector(ctx context.Context, input model.NewC
 
 // Connectors is the resolver for the connectors field.
 func (r *queryResolver) Connectors(ctx context.Context) ([]*model.Connector, error) {
-	dbcons, err := r.ConnectorLogic.GetAllConnectors()
+	pagedConnectors, err := r.ConnectorLogic.GetConnectors(models.ConnectorQueryParams{})
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 
 	var connectors []*model.Connector
-	for i := 0; i < len(*dbcons); i++ {
-		con := (*dbcons)[i]
-		convertedcon := convertToGraphConnector(con)
+	for i := 0; i < len(*pagedConnectors.Connectors); i++ {
+		con := (*pagedConnectors.Connectors)[i]
+		convertedcon := convertToGraphConnector(*con)
 		connectors = append(connectors, &convertedcon)
 	}
 

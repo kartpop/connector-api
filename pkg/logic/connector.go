@@ -6,25 +6,24 @@ import (
 )
 
 type ConnectorLogic interface {
-	GetAllConnectors() (*[]models.Connector, error)
+	GetConnectors(qp models.ConnectorQueryParams) (*models.ConnectorPagination, error)
 	AddConnector(*models.Connector) error
 	GetConnectorByID(string) (*models.Connector, error)
 	UpdateConnector(id string, upcon models.Connector) (*models.Connector, error)
 	DeleteConnector(id string) error
-	GetConnectors(qp models.ConnectorQueryParams) ([]*models.Connector, error)
 }
 
 type Connector struct {
 	data.DB
 }
 
-func (c *Connector) GetAllConnectors() (*[]models.Connector, error) {
-	connectors, err := c.DB.GetAllConnectors()
+func (c *Connector) GetConnectors(qp models.ConnectorQueryParams) (*models.ConnectorPagination, error) {
+	pagedConnectors, err := c.DB.GetConnectors(qp)
 	if err != nil {
 		return nil, err
 	}
 
-	return connectors, nil
+	return pagedConnectors, nil
 }
 
 func (c *Connector) AddConnector(con *models.Connector) error {
@@ -59,13 +58,4 @@ func (c *Connector) DeleteConnector(id string) error {
 	}
 
 	return nil
-}
-
-func (c *Connector) GetConnectors(qp models.ConnectorQueryParams) ([]*models.Connector, error) {
-	connectors, err := c.DB.GetConnectors(qp)
-	if err != nil {
-		return nil, err
-	}
-
-	return connectors, nil
 }

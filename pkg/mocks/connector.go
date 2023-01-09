@@ -5,7 +5,7 @@ import (
 	"github.com/sede-x/gopoc-connector/pkg/models"
 )
 
-var Connectors = []models.Connector{
+var Connectors = []*models.Connector{
 	{
 		Id:          helper.GetMD5Hash("lsdfy232"),
 		LocationId:  helper.GetMD5Hash("lsfddffy23432"),
@@ -23,7 +23,7 @@ var Connectors = []models.Connector{
 	{
 		Id:          helper.GetMD5Hash("2343sdfd"),
 		LocationId:  helper.GetMD5Hash("656sdfd"),
-		Type:        "L3", 
+		Type:        "L3",
 		ChargeSpeed: "50 KW",
 		Active:      false,
 	},

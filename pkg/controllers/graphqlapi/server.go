@@ -20,7 +20,6 @@ func (s *Server) Start(serveraddr string) {
 	http.Handle("/query", server)
 
 	// start server
-	log.Println("Connector GraphQL is running")
-	log.Printf("connect to http://localhost%s/ for GraphQL playground", serveraddr)
+	log.Printf("Connector GraphQL API is running at http://localhost%s/", serveraddr)
 	http.ListenAndServe(serveraddr, nil)
 }

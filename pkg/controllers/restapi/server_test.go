@@ -16,7 +16,7 @@ import (
 	"github.com/sede-x/gopoc-connector/pkg/models"
 )
 
-var connectorSet = map[string]models.Connector{
+var connectorSet = map[string]*models.Connector{
 	mocks.Connectors[0].Id: mocks.Connectors[0],
 	mocks.Connectors[1].Id: mocks.Connectors[1],
 	mocks.Connectors[2].Id: mocks.Connectors[2],
@@ -25,8 +25,11 @@ var connectorSet = map[string]models.Connector{
 // Mock struct implementing ConnectorLogic interface - to be injected into ConnectorRestApi instance
 type mockConnectorLogic struct{}
 
-func (mcl *mockConnectorLogic) GetAllConnectors() (*[]models.Connector, error) {
-	return &mocks.Connectors, nil
+func (mcl *mockConnectorLogic) GetConnectors(qp models.ConnectorQueryParams) (*models.ConnectorPagination, error) {
+	// TODO: not implemented
+	return &models.ConnectorPagination{
+		Connectors: &mocks.Connectors,
+	}, nil
 }
 
 func (mcl *mockConnectorLogic) AddConnector(c *models.Connector) error {
@@ -36,7 +39,7 @@ func (mcl *mockConnectorLogic) AddConnector(c *models.Connector) error {
 
 func (mcl *mockConnectorLogic) GetConnectorByID(id string) (*models.Connector, error) {
 	if connector, ok := connectorSet[id]; ok {
-		return &connector, nil
+		return connector, nil
 	}
 	return nil, fmt.Errorf("record not found")
 }
@@ -51,7 +54,7 @@ func (mcl *mockConnectorLogic) UpdateConnector(id string, upcon models.Connector
 	connector.Type = upcon.Type
 	connector.ChargeSpeed = upcon.ChargeSpeed
 	connector.Active = upcon.Active
-	return &connector, nil
+	return connector, nil
 }
 
 func (mcl *mockConnectorLogic) DeleteConnector(id string) error {
@@ -62,11 +65,6 @@ func (mcl *mockConnectorLogic) DeleteConnector(id string) error {
 	return nil
 }
 
-func (mcl *mockConnectorLogic) GetConnectors(qp models.ConnectorQueryParams) ([]*models.Connector, error) {
-	// TODO: not implemented
-	return []*models.Connector{}, nil
-}
-
 var s Server
 
 func init() {
@@ -74,9 +72,7 @@ func init() {
 	s.Initialize()
 }
 
-func TestGetAllConnectors(t *testing.T) {
-	// TODO: FIX TEST AFTER FULL IMPLEMENTATION AND REFACTORING
-	/*
+func TestGetConnectors(t *testing.T) {
 	// setup
 	req, _ := http.NewRequest(http.MethodGet, "/connectors", nil)
 	res := httptest.NewRecorder()
@@ -87,16 +83,17 @@ func TestGetAllConnectors(t *testing.T) {
 	// test
 	checkResponseCode(t, http.StatusOK, res.Code)
 
-	var actual []models.Connector
+	var actual models.ConnectorPagination
 	err := json.NewDecoder(res.Body).Decode(&actual)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	expected := mocks.Connectors
-	if !reflect.DeepEqual(actual, expected) {
+	if !reflect.DeepEqual(*actual.Connectors, expected) {
+		fmt.Println(actual.Connectors)
+		fmt.Println(expected)
 		t.Errorf("Actual response from GET /connectors does not match expected expected response.")
 	}
-	*/
 }
 
 func TestAddConnectorBadRequest(t *testing.T) {
@@ -176,7 +173,7 @@ func TestGetConnectorByIDValidRequest(t *testing.T) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	expected := mocks.Connectors[0]
+	expected := *mocks.Connectors[0]
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Actual response from GET /connectors does not match expected expected response.")
 	}
