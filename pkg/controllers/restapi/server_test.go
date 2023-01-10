@@ -238,7 +238,7 @@ func TestUpdateConnectorValidRequest(t *testing.T) {
 	s.router.ServeHTTP(res, req)
 
 	// test
-	checkResponseCode(t, http.StatusOK, res.Code)
+	checkResponseCode(t, http.StatusAccepted, res.Code)
 
 	var actual models.Connector
 	err = json.NewDecoder(res.Body).Decode(&actual)

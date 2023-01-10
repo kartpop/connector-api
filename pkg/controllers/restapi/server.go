@@ -37,8 +37,7 @@ func (s *Server) Initialize() {
 // GetConnectors returns a list of connectors based on the query paramerters. If there are no
 // query parameters, all connectors will be returned.
 func (s *Server) GetConnectors(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query()
-	queryParams, err := GetQueryParams(query)
+	queryParams, err := ValidateAndGetQueryParams(r.URL)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -100,7 +99,7 @@ func (s *Server) GetConnectorByID(w http.ResponseWriter, r *http.Request) {
 		// can do `errors.Is(err, gorm.ErrRecordNotFound)` - but this introduces
 		// dependency of controller layer on DB ORM library
 		if err.Error() == "record not found" {
-			http.NotFound(w, r)
+			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -147,8 +146,8 @@ func (s *Server) UpdateConnector(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Add("Context-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
 	err = json.NewEncoder(w).Encode(connector)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
