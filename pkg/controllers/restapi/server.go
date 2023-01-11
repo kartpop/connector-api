@@ -27,12 +27,53 @@ func (s *Server) Start(serveraddr string) {
 
 func (s *Server) Initialize() {
 	s.router = mux.NewRouter()
-	s.router.HandleFunc("/connectors", s.GetConnectors).Methods(http.MethodGet)
+
+	// CRUD
 	s.router.HandleFunc("/connectors", s.AddConnector).Methods(http.MethodPost)
 	s.router.HandleFunc("/connectors/{id}", s.GetConnectorByID).Methods(http.MethodGet)
 	s.router.HandleFunc("/connectors/{id}", s.UpdateConnector).Methods(http.MethodPut)
 	s.router.HandleFunc("/connectors/{id}", s.DeleteConnector).Methods(http.MethodDelete)
+
+	// Filter - POST request with query params in body
+	s.router.HandleFunc("/connectors/filter", s.FilterConnectors).Methods(http.MethodPost)
+
+	// [Redundant - to be removed] - GET request with query params in URL
+	s.router.HandleFunc("/connectors", s.GetConnectors).Methods(http.MethodGet)
 }
+
+// FilterConnectors returns a list of connectors based on the query paramerters sent in the body of the 
+// POST request. If there are no query parameters, all connectors will be returned.
+func (s *Server) FilterConnectors(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest) // or http.StatusInternalServerError ??
+		return
+	}
+
+	var queryParams models.ConnectorQueryParams
+	err = json.Unmarshal(body, &queryParams)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var pagedConnectors *models.ConnectorPagination
+	pagedConnectors, err = s.ConnectorLogic.GetConnectors(queryParams)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(pagedConnectors)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 
 // GetConnectors returns a list of connectors based on the query paramerters. If there are no
 // query parameters, all connectors will be returned.

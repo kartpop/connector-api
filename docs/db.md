@@ -13,6 +13,6 @@ Sample DB row:
 
 
 
-Index on location_id and type columns:
+Index on CustomerName, LocationName, Type columns:
 
-![Index on location_id and type columns](./images/index-locid-type.png?raw=true "Index on location_id and type columns")
+![Index on CustomerName, LocationName, Type columns](./images/index-custloctype.png?raw=true "Index on CustomerName, LocationName, Type columns")
