@@ -10,11 +10,12 @@ import (
 )
 
 var validQueryParams = map[string]bool{
-	"location_id": true,
-	"type":        true,
-	"sort":        true,
-	"limit":       true,
-	"page":        true,
+	"location_name": true,
+	"customer_name": true,
+	"type":          true,
+	"sort":          true,
+	"limit":         true,
+	"page":          true,
 }
 
 func ValidateAndGetQueryParams(url *url.URL) (models.ConnectorQueryParams, error) {
@@ -52,11 +53,12 @@ func ValidateAndGetQueryParams(url *url.URL) (models.ConnectorQueryParams, error
 		}
 	}
 	queryParams := models.ConnectorQueryParams{
-		LocationIds: query["location_id"],
-		Types:       query["type"],
-		Sort:        sort,
-		Limit:       limit,
-		Page:        page,
+		CustomerNames: query["customer_name"],
+		LocationNames: query["location_name"],
+		Types:         query["type"],
+		Sort:          sort,
+		Limit:         limit,
+		Page:          page,
 	}
 
 	return queryParams, nil

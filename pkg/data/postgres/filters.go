@@ -12,11 +12,13 @@ func FilterConnectors(db *gorm.DB, qp models.ConnectorQueryParams, pagedConnecto
 	result := db.Session(&gorm.Session{})
 
 	// filter
-	if len(qp.LocationIds) > 0 && len(qp.Types) > 0 {
-		result = result.Where("location_id IN ? AND type IN ?", qp.LocationIds, qp.Types)
-	} else if len(qp.LocationIds) > 0 {
-		result = result.Where("location_id IN ?", qp.LocationIds)
-	} else if len(qp.Types) > 0 {
+	if len(qp.CustomerNames) > 0 {
+		result = result.Where("customer_name IN ?", qp.CustomerNames)
+	}
+	if len(qp.LocationNames) > 0 {
+		result = result.Where("location_name IN ?", qp.LocationNames)
+	}
+	if len(qp.Types) > 0 {
 		result = result.Where("type IN ?", qp.Types)
 	}
 

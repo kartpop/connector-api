@@ -9,7 +9,7 @@ Model:
 
 Sample DB row:
 
-![Sample DB row](./images/sample-db-view.png?raw=true "Sample DB row")
+![Sample DB row (json)](./images/sample-db-view.png?raw=true "Sample DB row (json)")
 
 
 

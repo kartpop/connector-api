@@ -19,9 +19,9 @@ func Paginate(connectors *[]*models.Connector, cp *models.ConnectorPagination, q
 	cp.TotalPages = totalPages
 
 	if qp.Sort {
-		cp.Sort = "location_id, type"
+		cp.Sort = "customer_name, location_name, type"
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Offset(cp.GetOffset()).Limit(cp.GetLimit()).Order("location_id").Order("type")
+			return db.Offset(cp.GetOffset()).Limit(cp.GetLimit()).Order("customer_name").Order("location_name").Order("type")
 		}
 	}
 
