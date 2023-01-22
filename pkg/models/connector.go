@@ -25,3 +25,10 @@ func (c Connector) GenerateId() string {
 	keyString := fmt.Sprintf("%s-%s-%s", c.LocationId, c.Type, c.ChargeSpeed)
 	return helper.GetMD5Hash(keyString)
 }
+
+type NewConnectorMessage struct {
+	Id           string `json:"id,omitempty"`
+	Name         string `json:"name,omitempty"`
+	LocationId   string `json:"location_id,omitempty"`
+	LocationName string `json:"location_name,omitempty"`
+}

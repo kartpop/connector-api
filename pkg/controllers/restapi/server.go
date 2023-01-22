@@ -41,7 +41,7 @@ func (s *Server) Initialize() {
 	s.router.HandleFunc("/connectors", s.GetConnectors).Methods(http.MethodGet)
 }
 
-// FilterConnectors returns a list of connectors based on the query paramerters sent in the body of the 
+// FilterConnectors returns a list of connectors based on the query paramerters sent in the body of the
 // POST request. If there are no query parameters, all connectors will be returned.
 func (s *Server) FilterConnectors(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
@@ -73,7 +73,6 @@ func (s *Server) FilterConnectors(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
 
 // GetConnectors returns a list of connectors based on the query paramerters. If there are no
 // query parameters, all connectors will be returned.
