@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/sede-x/gopoc-connector/pkg/controllers"
 	"github.com/sede-x/gopoc-connector/pkg/controllers/graphqlapi"
 	"github.com/sede-x/gopoc-connector/pkg/controllers/restapi"
+	"github.com/sede-x/gopoc-connector/pkg/data/kafkaq"
 	"github.com/sede-x/gopoc-connector/pkg/data/postgres"
 	"github.com/sede-x/gopoc-connector/pkg/logic"
 )
@@ -27,19 +27,14 @@ func main() {
 		log.Fatalln(err.Error())
 	}
 
-	// setup Kafka producer
-	producer, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": os.Getenv("KAFKA_BOOTSTRAP_SERVERS"),
-		"client.id":         "1000",
-		"acks":              "all",
-	})
+	// setup Kafka
+	kafka, err := kafkaq.New()
 	if err != nil {
-		fmt.Printf("Failed to create producer: %s\n", err)
-		os.Exit(1)
+		log.Fatalln(err.Error())
 	}
 
 	// setup logic
-	conlogic := &logic.Connector{DB: pgdb, KafkaProducer: producer}
+	conlogic := &logic.Connector{DB: pgdb, MQ: kafka}
 
 	// setup server based on APITYPE set in .env
 	var server controllers.APIServer

@@ -2,10 +2,8 @@ package logic
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/sede-x/gopoc-connector/pkg/data"
 	"github.com/sede-x/gopoc-connector/pkg/models"
 )
@@ -19,8 +17,8 @@ type ConnectorLogic interface {
 }
 
 type Connector struct {
-	data.DB
-	KafkaProducer *kafka.Producer
+	DB data.DB
+	MQ data.MessageQueue
 }
 
 func (c *Connector) GetConnectors(qp models.ConnectorQueryParams) (*models.ConnectorPagination, error) {
@@ -38,8 +36,8 @@ func (c *Connector) AddConnector(con *models.Connector) error {
 		return err
 	}
 
-	// Broadcast connector created message over Kafka
-	jsonPayload, err := json.Marshal(&models.NewConnectorMessage{
+	// Broadcast NewConnector message over message queue
+	newConnectorMessage, err := json.Marshal(&models.NewConnectorMessage{
 		Id:           con.Id,
 		Name:         con.Name,
 		LocationId:   con.LocationId,
@@ -48,18 +46,10 @@ func (c *Connector) AddConnector(con *models.Connector) error {
 	if err != nil {
 		return err
 	}
-	kafkaTopic := os.Getenv("KAFKA_TOPIC_CONNECTOR")
-	delivery_chan := make(chan kafka.Event, 10000)
-	err = c.KafkaProducer.Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{
-			Topic:     &kafkaTopic,
-			Partition: kafka.PartitionAny,
-		},
-		Value: []byte(jsonPayload)},
-		delivery_chan,
-	)
+	topic := os.Getenv("NEW_CONNECTOR_TOPIC")
+	err = c.MQ.ProduceMessage(topic, newConnectorMessage)
 	if err != nil {
-		fmt.Println("Error producing Kafka message: " + err.Error())
+		return err
 	}
 
 	return nil
