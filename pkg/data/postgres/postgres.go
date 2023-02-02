@@ -1,6 +1,9 @@
 package postgres
 
 import (
+	"errors"
+
+	"github.com/sede-x/gopoc-connector/pkg/helper"
 	"github.com/sede-x/gopoc-connector/pkg/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -46,6 +49,9 @@ func (pg *PostgresDB) AddConnector(con *models.Connector) error {
 func (pg *PostgresDB) GetConnectorByID(id string) (*models.Connector, error) {
 	var con models.Connector
 	if result := pg.DB.First(&con, "id = ?", id); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, &helper.ErrRecordNotFound{}
+		}
 		return nil, result.Error
 	}
 
@@ -55,6 +61,9 @@ func (pg *PostgresDB) GetConnectorByID(id string) (*models.Connector, error) {
 func (pg *PostgresDB) UpdateConnector(id string, upcon models.Connector) (*models.Connector, error) {
 	var con models.Connector
 	if result := pg.DB.First(&con, "id = ?", id); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, &helper.ErrRecordNotFound{}
+		}
 		return nil, result.Error
 	}
 
@@ -74,6 +83,9 @@ func (pg *PostgresDB) UpdateConnector(id string, upcon models.Connector) (*model
 func (pg *PostgresDB) DeleteConnector(id string) error {
 	var con models.Connector
 	if result := pg.DB.First(&con, "id = ?", id); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return &helper.ErrRecordNotFound{}
+		}
 		return result.Error
 	}
 	if result := pg.DB.Delete(&con); result.Error != nil {

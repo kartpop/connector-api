@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/sede-x/gopoc-connector/pkg/helper"
 	"github.com/sede-x/gopoc-connector/pkg/logic"
 	"github.com/sede-x/gopoc-connector/pkg/models"
 )
@@ -135,15 +136,14 @@ func (s *Server) GetConnectorByID(w http.ResponseWriter, r *http.Request) {
 
 	connector, err := s.ConnectorLogic.GetConnectorByID(id)
 	if err != nil {
-		// TODO: must be a better way of doing this!
-		// can do `errors.Is(err, gorm.ErrRecordNotFound)` - but this introduces
-		// dependency of controller layer on DB ORM library
-		if err.Error() == "record not found" {
-			http.Error(w, err.Error(), http.StatusNotFound)
+		switch e := err.(type) {
+		case *helper.ErrRecordNotFound:
+			http.Error(w, e.Error(), http.StatusNotFound)
+			return
+		default:
+			http.Error(w, e.Error(), http.StatusInternalServerError)
 			return
 		}
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
 	}
 
 	w.Header().Add("Content-Type", "application/json")
@@ -175,15 +175,14 @@ func (s *Server) UpdateConnector(w http.ResponseWriter, r *http.Request) {
 
 	connector, err := s.ConnectorLogic.UpdateConnector(id, updatedConnector)
 	if err != nil {
-		// TODO: check how `errors.Is(err, gorm.ErrRecordNotFound)` can be incorporated
-		// without indroducing dependency on ORM library
-		if err.Error() == "record not found" {
-			http.Error(w, err.Error(), http.StatusNotFound)
+		switch e := err.(type) {
+		case *helper.ErrRecordNotFound:
+			http.Error(w, e.Error(), http.StatusNotFound)
+			return
+		default:
+			http.Error(w, e.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
 	}
 
 	w.Header().Add("Content-Type", "application/json")
@@ -201,14 +200,14 @@ func (s *Server) DeleteConnector(w http.ResponseWriter, r *http.Request) {
 
 	err := s.ConnectorLogic.DeleteConnector(id)
 	if err != nil {
-		// TODO: check how `errors.Is(err, gorm.ErrRecordNotFound)` can be incorporated
-		// without indroducing dependency on ORM library
-		if err.Error() == "record not found" {
-			http.Error(w, err.Error(), http.StatusNotFound)
+		switch e := err.(type) {
+		case *helper.ErrRecordNotFound:
+			http.Error(w, e.Error(), http.StatusNotFound)
+			return
+		default:
+			http.Error(w, e.Error(), http.StatusInternalServerError)
 			return
 		}
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
 	}
 
 	w.Header().Add("Context-Type", "application/json")
