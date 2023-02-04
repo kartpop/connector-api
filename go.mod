@@ -19,6 +19,7 @@ require (
 )
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/confluentinc/confluent-kafka-go v1.9.3-RC3
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
