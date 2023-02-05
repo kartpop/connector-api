@@ -41,13 +41,13 @@ func (mcl *mockConnectorLogic) GetConnectorByID(id string) (*models.Connector, e
 	if connector, ok := connectorSet[id]; ok {
 		return connector, nil
 	}
-	return nil, fmt.Errorf("record not found")
+	return nil, &helper.ErrRecordNotFound{}
 }
 
 func (mcl *mockConnectorLogic) UpdateConnector(id string, upcon models.Connector) (*models.Connector, error) {
 	connector, ok := connectorSet[id]
 	if !ok {
-		return nil, fmt.Errorf("record not found")
+		return nil, &helper.ErrRecordNotFound{}
 	}
 
 	connector.LocationId = upcon.LocationId
@@ -60,7 +60,7 @@ func (mcl *mockConnectorLogic) UpdateConnector(id string, upcon models.Connector
 func (mcl *mockConnectorLogic) DeleteConnector(id string) error {
 	_, ok := connectorSet[id]
 	if !ok {
-		return fmt.Errorf("record not found")
+		return &helper.ErrRecordNotFound{}
 	}
 	return nil
 }
