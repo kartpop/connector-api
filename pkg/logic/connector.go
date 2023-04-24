@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/sede-x/gopoc-connector/pkg/data"
-	"github.com/sede-x/gopoc-connector/pkg/models"
+	"github.com/kartpop/connector-api/pkg/data"
+	"github.com/kartpop/connector-api/pkg/models"
 )
 
 type ConnectorLogic interface {

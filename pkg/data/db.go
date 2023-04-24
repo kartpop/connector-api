@@ -1,6 +1,6 @@
 package data
 
-import "github.com/sede-x/gopoc-connector/pkg/models"
+import "github.com/kartpop/connector-api/pkg/models"
 
 type DB interface {
 	GetConnectors(qp models.ConnectorQueryParams) (*models.ConnectorPagination, error)

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sede-x/gopoc-connector/pkg/helper"
+	"github.com/kartpop/connector-api/pkg/helper"
 )
 
 type Connector struct {

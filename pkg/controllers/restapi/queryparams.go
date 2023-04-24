@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sede-x/gopoc-connector/pkg/models"
+	"github.com/kartpop/connector-api/pkg/models"
 )
 
 var validQueryParams = map[string]bool{

@@ -8,9 +8,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/sede-x/gopoc-connector/pkg/helper"
-	"github.com/sede-x/gopoc-connector/pkg/logic"
-	"github.com/sede-x/gopoc-connector/pkg/models"
+	"github.com/kartpop/connector-api/pkg/helper"
+	"github.com/kartpop/connector-api/pkg/logic"
+	"github.com/kartpop/connector-api/pkg/models"
 )
 
 type Server struct {

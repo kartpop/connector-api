@@ -1,8 +1,8 @@
 package graph
 
 import (
-	"github.com/sede-x/gopoc-connector/pkg/controllers/graphqlapi/graph/model"
-	"github.com/sede-x/gopoc-connector/pkg/models"
+	"github.com/kartpop/connector-api/pkg/controllers/graphqlapi/graph/model"
+	"github.com/kartpop/connector-api/pkg/models"
 )
 
 func convertToGraphConnector(con models.Connector) model.Connector {

@@ -6,8 +6,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/sede-x/gopoc-connector/pkg/controllers/graphqlapi/graph"
-	"github.com/sede-x/gopoc-connector/pkg/logic"
+	"github.com/kartpop/connector-api/pkg/controllers/graphqlapi/graph"
+	"github.com/kartpop/connector-api/pkg/logic"
 )
 
 type Server struct {

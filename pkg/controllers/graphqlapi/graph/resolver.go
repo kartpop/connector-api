@@ -1,6 +1,6 @@
 package graph
 
-import "github.com/sede-x/gopoc-connector/pkg/logic"
+import "github.com/kartpop/connector-api/pkg/logic"
 
 // This file will not be regenerated automatically.
 //

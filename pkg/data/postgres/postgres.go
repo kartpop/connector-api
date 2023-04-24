@@ -3,8 +3,8 @@ package postgres
 import (
 	"errors"
 
-	"github.com/sede-x/gopoc-connector/pkg/helper"
-	"github.com/sede-x/gopoc-connector/pkg/models"
+	"github.com/kartpop/connector-api/pkg/helper"
+	"github.com/kartpop/connector-api/pkg/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

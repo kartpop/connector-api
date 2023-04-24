@@ -8,8 +8,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/sede-x/gopoc-connector/pkg/controllers/graphqlapi/graph/model"
-	"github.com/sede-x/gopoc-connector/pkg/models"
+	"github.com/kartpop/connector-api/pkg/controllers/graphqlapi/graph/model"
+	"github.com/kartpop/connector-api/pkg/models"
 )
 
 // CreateConnector is the resolver for the createConnector field.

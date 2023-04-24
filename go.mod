@@ -1,4 +1,4 @@
-module github.com/sede-x/gopoc-connector
+module github.com/kartpop/connector-api
 
 go 1.19
 

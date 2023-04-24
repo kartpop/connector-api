@@ -5,12 +5,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/sede-x/gopoc-connector/pkg/controllers"
-	"github.com/sede-x/gopoc-connector/pkg/controllers/graphqlapi"
-	"github.com/sede-x/gopoc-connector/pkg/controllers/restapi"
-	"github.com/sede-x/gopoc-connector/pkg/data/kafkaq"
-	"github.com/sede-x/gopoc-connector/pkg/data/postgres"
-	"github.com/sede-x/gopoc-connector/pkg/logic"
+	"github.com/kartpop/connector-api/pkg/controllers"
+	"github.com/kartpop/connector-api/pkg/controllers/graphqlapi"
+	"github.com/kartpop/connector-api/pkg/controllers/restapi"
+	"github.com/kartpop/connector-api/pkg/data/kafkaq"
+	"github.com/kartpop/connector-api/pkg/data/postgres"
+	"github.com/kartpop/connector-api/pkg/logic"
 )
 
 func main() {
